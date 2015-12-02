@@ -68,22 +68,22 @@ when defined(linux):
     for button in buttons:
       discard dialog.add_button(button.title.cstring, button.responseType.cint)
 
-    cast[Window](dialog).set_modal(true)
-
     # Run dialog
-    #var res = cast[Dialog](dialog).run()
-    #var res = cast[ptr Dialog](addr(dialog))[].run()
     var res = dialog.run()
 
     # Analyze call results
     case ResponseType(res):
     of ResponseType.ACCEPT, ResponseType.YES, ResponseType.APPLY:
       let fileChooser = cast[FileChooser](pointer(dialog))
-      return $fileChooser.get_filename()
+      result = $fileChooser.get_filename()
     of ResponseType.REJECT, ResponseTYPE.NO , ResponseType.CANCEL, ResponseType.CLOSE:
-      return nil
+      result = nil
     else:
-      return nil
+      result = nil
+
+    dialog.destroy()
+    while events_pending():
+      discard main_iteration()
 
   proc callDialogFileOpen*(title: string, buttons: seq[DialogButtonInfo] = dialogFileOpenDefaultButtons): string =
     ## Calls Linux-based OS open file dialog, and returns selected filename[s]
