@@ -1,6 +1,5 @@
 ## Nim cross-platform library that implements calling native desktop
 ## operating systems dialogs.
-
 import os
 import strutils
 
@@ -24,16 +23,13 @@ when defined(linux):
   var windowToolkitKind: WindowToolkitKind
 
   # Checking for Linux system capabilities
+  import glib
   import gtk3
 
   # Checking for Window Manager Type, and performing initialization if needed
   if os.getEnv("XDG_CURRENT_DESKTOP").toLower() in @["unity", "gnome"]:
     windowToolkitKind = WindowToolkitKind.GTK
     # Initializing GNOME-based environment
-    var
-      argc: cint = 0
-      argv: cstringArray = nil
-    discard init_check(argc, argv)
   elif os.getEnv("GDMSESSION").toLower() in @["kde-plasma"]:
     # Initializing KDE-based environment
     windowToolkitKind = WindowToolkitKind.KDE
@@ -60,13 +56,23 @@ when defined(linux):
     ]
 
   proc callDialogFile(action: FileChooserAction, title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+    var
+      argc: cint = 0
+      argv: cstringArray = nil
+    discard init_check(argc, argv)
+    echo "GTK initialized"
+
     # Setup dialog
     var dialog = file_chooser_dialog_new(title.cstring, nil, action, nil)
     # Setup buttons
     for button in buttons:
       discard dialog.add_button(button.title.cstring, button.responseType.cint)
 
+    cast[Window](dialog).set_modal(true)
+
     # Run dialog
+    #var res = cast[Dialog](dialog).run()
+    #var res = cast[ptr Dialog](addr(dialog))[].run()
     var res = dialog.run()
 
     # Analyze call results
