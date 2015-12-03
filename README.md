@@ -10,5 +10,8 @@ The library is:
 ```nim
 import native_dialogs
 
-## To be continued...
+echo callDialogFileOpen("Open File")
+echo callDialogFileSave("Save File")
+echo callDialogFolderCreate("Create New Folder")
+echo callDialogFolderSelect("Open Folder")
 ```
