@@ -145,9 +145,54 @@ elif defined(windows):
 # ======== #
 # OSX
 # ======== #
-elif defined(macos):
-  var windowToolkitKind: WindowToolkitKind = WindowToolkitKind.Darwin
-  raise new(ErrorUnsupportedPlatform)
+elif defined(macosx):
+    var windowToolkitKind = WindowToolkitKind.Darwin
+
+    {.passL: "-framework AppKit".}
+
+    type NSSavePanel {.importobjc: "NSSavePanel*", header: "<AppKit/AppKit.h>", incompleteStruct.} = object
+    type NSOpenPanel {.importobjc: "NSOpenPanel*", header: "<AppKit/AppKit.h>", incompleteStruct.} = object
+
+    proc newOpenPanel: NSOpenPanel {.importobjc: "NSOpenPanel openPanel", nodecl.}
+    proc newSavePanel: NSSavePanel {.importobjc: "NSSavePanel savePanel", nodecl.}
+
+    {.push hint[XDeclaredButNotUsed]: off.}
+
+    proc callDialogFileOpen*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+      {.emit: "NSAutoreleasePool* pool = [NSAutoreleasePool new];".}
+      let dialog = newOpenPanel()
+      let ctitle : cstring = title
+      var cres: cstring
+
+      {.emit: """
+      [`dialog` setCanChooseFiles:YES];
+      `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
+      if ([`dialog` runModal] == NSOKButton && `dialog`.URLs.count > 0) {
+        `cres` = [`dialog`.URLs objectAtIndex: 0].path.UTF8String;
+      }
+      """.}
+      if not cres.isNil:
+        result = $cres
+      {.emit: "[pool drain];".}
+
+    proc callDialogFileSave*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+      {.emit: "NSAutoreleasePool* pool = [NSAutoreleasePool new];".}
+      let dialog = newSavePanel()
+      let ctitle : cstring = title
+      var cres: cstring
+
+      {.emit: """
+      `dialog`.canCreateDirectories = YES;
+      `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
+      if ([`dialog` runModal] == NSOKButton) {
+        `cres` = `dialog`.URL.path.UTF8String;
+      }
+      """.}
+      if not cres.isNil:
+        result = $cres
+      {.emit: "[pool drain];".}
+
+    {.pop.}
 
 else:
   raise new(ErrorUnsupportedPlatform)
