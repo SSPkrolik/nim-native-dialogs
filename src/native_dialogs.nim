@@ -106,14 +106,93 @@ when defined(linux):
 # ======== #
 elif defined(windows):
   var windowToolkitKind: WindowToolkitKind = WindowToolkitKind.Win32
-  raise new(ErrorUnsupportedPlatform)
+
+  ## Implementing Win32
+  import windows
+
+  type WindowsDialogAction {.pure.} = enum
+    Open = 0
+    Save
+
+  proc callDialogFile(title: string, action: WindowsDialogAction, buttons: seq[DialogButtonInfo] = @[]): string =
+    var
+      fileInfo: LPOPENFILENAME = cast[LPOPENFILENAME](alloc0(sizeof(TOPENFILENAME)))
+      buf: cstring = cast[cstring](alloc0(1024))
+
+    fileInfo.lStructSize = sizeof(TOPENFILENAME).DWORD
+    fileInfo.hWndOwner = 0
+    fileInfo.flags = OFN_FILEMUSTEXIST or OFN_PATHMUSTEXIST
+    fileInfo.lpstrFile = buf
+    fileInfo.nMaxFile = 1024
+    fileInfo.lpstrFilter = "All\0*.*\0";
+    fileInfo.lpstrFileTitle = title
+
+    var res: int
+    case action
+    of WindowsDialogAction.Open:
+      res = GetOpenFileName(fileInfo)
+    of WindowsDialogAction.Save:
+      res = GetSaveFileName(fileInfo)
+
+    return if res == 0: nil else: $buf
+
+  proc callDialogFileOpen*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+    return callDialogFile(title, WindowsDialogAction.Open, buttons)
+
+  proc callDialogFileSave*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+    return callDialogFile(title, WindowsDialogAction.Save, buttons)
 
 # ======== #
 # OSX
 # ======== #
-elif defined(macos):
-  var windowToolkitKind: WindowToolkitKind = WindowToolkitKind.Darwin
-  raise new(ErrorUnsupportedPlatform)
+elif defined(macosx):
+    var windowToolkitKind = WindowToolkitKind.Darwin
+
+    {.passL: "-framework AppKit".}
+
+    type NSSavePanel {.importobjc: "NSSavePanel*", header: "<AppKit/AppKit.h>", incompleteStruct.} = object
+    type NSOpenPanel {.importobjc: "NSOpenPanel*", header: "<AppKit/AppKit.h>", incompleteStruct.} = object
+
+    proc newOpenPanel: NSOpenPanel {.importobjc: "NSOpenPanel openPanel", nodecl.}
+    proc newSavePanel: NSSavePanel {.importobjc: "NSSavePanel savePanel", nodecl.}
+
+    {.push hint[XDeclaredButNotUsed]: off.}
+
+    proc callDialogFileOpen*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+      {.emit: "NSAutoreleasePool* pool = [NSAutoreleasePool new];".}
+      let dialog = newOpenPanel()
+      let ctitle : cstring = title
+      var cres: cstring
+
+      {.emit: """
+      [`dialog` setCanChooseFiles:YES];
+      `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
+      if ([`dialog` runModal] == NSOKButton && `dialog`.URLs.count > 0) {
+        `cres` = [`dialog`.URLs objectAtIndex: 0].path.UTF8String;
+      }
+      """.}
+      if not cres.isNil:
+        result = $cres
+      {.emit: "[pool drain];".}
+
+    proc callDialogFileSave*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+      {.emit: "NSAutoreleasePool* pool = [NSAutoreleasePool new];".}
+      let dialog = newSavePanel()
+      let ctitle : cstring = title
+      var cres: cstring
+
+      {.emit: """
+      `dialog`.canCreateDirectories = YES;
+      `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
+      if ([`dialog` runModal] == NSOKButton) {
+        `cres` = `dialog`.URL.path.UTF8String;
+      }
+      """.}
+      if not cres.isNil:
+        result = $cres
+      {.emit: "[pool drain];".}
+
+    {.pop.}
 
 else:
   raise new(ErrorUnsupportedPlatform)
@@ -122,5 +201,5 @@ when isMainModule:
   echo "Your window toolkit is: ", windowToolkitKind
   echo callDialogFileOpen("Open Simulation Results File")
   echo callDialogFileSave("Save Simulation Results File")
-  echo callDialogFolderCreate("Create New Folder")
-  echo callDialogFolderSelect("Open Folder")
+  #echo callDialogFolderCreate("Create New Folder")
+  #echo callDialogFolderSelect("Open Folder")
