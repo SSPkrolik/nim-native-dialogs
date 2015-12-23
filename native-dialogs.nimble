@@ -1,5 +1,5 @@
 [Package]
-name          = "nim-native-dialogs"
+name          = "native-dialogs"
 version       = "0.1.0"
 author        = "Rostyslav Dzinko (rostislav.dzinko@gmail.com)"
 description   = "Implements framework-agnostic native operating system dialogs calls"
