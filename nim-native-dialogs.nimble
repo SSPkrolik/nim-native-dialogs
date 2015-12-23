@@ -1,13 +1,14 @@
 [Package]
 name          = "nim-native-dialogs"
 version       = "0.1.0"
-author        = "Anonymous"
-description   = "New Nimble project for Nim"
+author        = "Rostyslav Dzinko (rostislav.dzinko@gmail.com)"
+description   = "Implements framework-agnostic native operating system dialogs calls"
 license       = "MIT"
 srcDir        = "src"
 
 [Deps]
 Requires: "nim >= 0.10.0"
+Requires: "oldwinapi"
 Requires: "https://github.com/StefanSalewski/nim-gtk3"
 Requires: "https://github.com/StefanSalewski/nim-gdk3"
 Requires: "https://github.com/StefanSalewski/nim-glib"
