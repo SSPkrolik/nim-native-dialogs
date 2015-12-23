@@ -1,15 +1,13 @@
 # nim-native-dialogs
 Native Operating System Dialogs implementation for Nim-lang via single API.
+The library is GUI framework agnostic and supports the next platforms:
 
-The library is:
-
- * GUI framework agnostic
- * Supports platforms:
    * GNU/Linux + GTK+3
-   * MacOS + Cocoa
+   * OSX + Cocoa
    * Windows + Win32 API
 
- Currently the next dialogs are implplemented in a single-file mode:
+ Currently the next dialogs are implemented in a single-file mode:
+
    * Open File Dialog
    * Save File Dialog
    * Folder Creation Dialog
