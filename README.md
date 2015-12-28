@@ -1,4 +1,7 @@
 # nim-native-dialogs
+
+[![nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/yglukhov/nimble-tag)
+
 Native Operating System Dialogs implementation for Nim-lang via single API.
 The library is GUI framework agnostic and supports the next platforms:
 
