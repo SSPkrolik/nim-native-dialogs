@@ -4,9 +4,6 @@ import os
 import strutils
 
 type
-  ErrorUnsupportedPlatform* = ref object of Exception
-  ## OS is not supported by the library exception
-
   WindowToolkitKind* {.pure.} = enum  ## Kind of API to call dialogs via
     Win32 = 0
     Darwin
@@ -19,7 +16,7 @@ type
 # ======= #
 #  LINUX  #
 # ======= #
-when defined(linux):
+when defined(linux) and not defined(android):
   var windowToolkitKind: WindowToolkitKind
 
   # Checking for Linux system capabilities
@@ -145,7 +142,7 @@ elif defined(windows):
 # ======== #
 # OSX
 # ======== #
-elif defined(macosx):
+elif defined(macosx) and not defined(ios):
     var windowToolkitKind = WindowToolkitKind.Darwin
 
     {.passL: "-framework AppKit".}
@@ -195,7 +192,7 @@ elif defined(macosx):
     {.pop.}
 
 else:
-  raise new(ErrorUnsupportedPlatform)
+  {.error: "Unsupported platform".}
 
 when isMainModule:
   echo "Your window toolkit is: ", windowToolkitKind
