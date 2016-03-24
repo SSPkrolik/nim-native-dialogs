@@ -19,7 +19,7 @@ Currently the next dialogs are implemented in a single-file mode:
 ## Installation
 
 ```bash
-$ nimble install https://github.com/SSPkrolik/nim-native-dialogs
+$ nimble install native_dialogs
 ```
 
 ## Usage
