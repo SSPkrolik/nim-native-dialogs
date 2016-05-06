@@ -16,7 +16,7 @@ type
 # ======= #
 #  LINUX  #
 # ======= #
-when defined(linux) and not defined(android):
+when defined(linux) and not defined(android) and not defined(emscripten):
   var windowToolkitKind: WindowToolkitKind
 
   # Checking for Linux system capabilities
