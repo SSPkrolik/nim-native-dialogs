@@ -153,43 +153,48 @@ elif defined(macosx) and not defined(ios):
     proc newOpenPanel: NSOpenPanel {.importobjc: "NSOpenPanel openPanel", nodecl.}
     proc newSavePanel: NSSavePanel {.importobjc: "NSSavePanel savePanel", nodecl.}
 
-    {.push hint[XDeclaredButNotUsed]: off.}
+    template wrapObjModalCode(body: untyped) =
+      {.emit: """
+      NSAutoreleasePool* pool = [NSAutoreleasePool new];
+      NSOpenGLContext* glCtx = [[NSOpenGLContext currentContext] retain];
+      """.}
+      body
+      {.emit: """
+      [pool drain];
+      [glCtx makeCurrentContext];
+      [glCtx release];
+      """.}
 
     proc callDialogFileOpen*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
-      {.emit: "NSAutoreleasePool* pool = [NSAutoreleasePool new];".}
-      let dialog = newOpenPanel()
-      let ctitle : cstring = title
-      var cres: cstring
-
-      {.emit: """
-      [`dialog` setCanChooseFiles:YES];
-      `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
-      if ([`dialog` runModal] == NSOKButton && `dialog`.URLs.count > 0) {
-        `cres` = [`dialog`.URLs objectAtIndex: 0].path.UTF8String;
-      }
-      """.}
-      if not cres.isNil:
-        result = $cres
-      {.emit: "[pool drain];".}
+      wrapObjModalCode:
+        let dialog = newOpenPanel()
+        let ctitle : cstring = title
+        var cres: cstring
+        {.emit: """
+        [`dialog` setCanChooseFiles:YES];
+        `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
+        if ([`dialog` runModal] == NSOKButton && `dialog`.URLs.count > 0) {
+          `cres` = [`dialog`.URLs objectAtIndex: 0].path.UTF8String;
+        }
+        """.}
+        if not cres.isNil:
+          result = $cres
 
     proc callDialogFileSave*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
-      {.emit: "NSAutoreleasePool* pool = [NSAutoreleasePool new];".}
-      let dialog = newSavePanel()
-      let ctitle : cstring = title
-      var cres: cstring
+      wrapObjModalCode:
+        let dialog = newSavePanel()
+        let ctitle : cstring = title
+        var cres: cstring
 
-      {.emit: """
-      `dialog`.canCreateDirectories = YES;
-      `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
-      if ([`dialog` runModal] == NSOKButton) {
-        `cres` = `dialog`.URL.path.UTF8String;
-      }
-      """.}
-      if not cres.isNil:
-        result = $cres
-      {.emit: "[pool drain];".}
-
-    {.pop.}
+        {.emit: """
+        `dialog`.canCreateDirectories = YES;
+        `dialog`.title = [NSString stringWithUTF8String: `ctitle`];
+        if ([`dialog` runModal] == NSOKButton) {
+          `cres` = `dialog`.URL.path.UTF8String;
+        }
+        """.}
+        if not cres.isNil:
+          result = $cres
 
 else:
   {.error: "Unsupported platform".}
