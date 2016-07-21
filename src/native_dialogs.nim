@@ -156,6 +156,7 @@ elif defined(macosx) and not defined(ios):
     template wrapObjModalCode(body: untyped) =
       {.emit: """
       NSAutoreleasePool* pool = [NSAutoreleasePool new];
+      NSWindow* keyWindow = [NSApp keyWindow];
       NSOpenGLContext* glCtx = [[NSOpenGLContext currentContext] retain];
       """.}
       body
@@ -163,6 +164,7 @@ elif defined(macosx) and not defined(ios):
       [pool drain];
       [glCtx makeCurrentContext];
       [glCtx release];
+      [keyWindow makeKeyAndOrderFront: nil];
       """.}
 
     proc callDialogFileOpen*(title: string, buttons: seq[DialogButtonInfo] = @[]): string =
