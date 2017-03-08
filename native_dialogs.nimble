@@ -10,3 +10,4 @@ srcDir        = "src"
 
 requires "nim >= 0.10.0"
 requires "oldwinapi"
+requires "gtk2"
