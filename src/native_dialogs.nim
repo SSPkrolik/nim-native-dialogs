@@ -20,8 +20,8 @@ when defined(linux) and not defined(android) and not defined(emscripten):
   var windowToolkitKind: WindowToolkitKind
 
   # Checking for Linux system capabilities
-  import glib
-  import gtk3
+  import glib2
+  import gtk2
 
   # Checking for Window Manager Type, and performing initialization if needed
   if os.getEnv("XDG_CURRENT_DESKTOP").toLower() in @["unity", "gnome"]:
