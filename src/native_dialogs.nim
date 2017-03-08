@@ -33,30 +33,30 @@ when defined(linux) and not defined(android) and not defined(emscripten):
 
   let
     dialogFileOpenDefaultButtons*: seq[DialogButtonInfo] = @[
-      (title: "Cancel", responseType: ResponseType.CANCEL.int),
-      (title: "Open", responseType: ResponseType.ACCEPT.int)
+      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
+      (title: "Open", responseType: RESPONSE_ACCEPT.int)
     ]
 
     dialogFileSaveDefaultButtons*: seq[DialogButtonInfo] = @[
-      (title: "Cancel", responseType: ResponseType.CANCEL.int),
-      (title: "Save", responseType: ResponseType.ACCEPT.int)
+      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
+      (title: "Save", responseType: RESPONSE_ACCEPT.int)
     ]
 
     dialogFolderCreateDefaultButtons*: seq[DialogButtonInfo] = @[
-      (title: "Cancel", responseType: ResponseType.CANCEL.int),
-      (title: "Create", responseType: ResponseType.ACCEPT.int)
+      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
+      (title: "Create", responseType: RESPONSE_ACCEPT.int)
     ]
 
     dialogFolderSelectDefaultButtons*: seq[DialogButtonInfo] = @[
-      (title: "Cancel", responseType: ResponseType.CANCEL.int),
-      (title: "Open", responseType: ResponseType.ACCEPT.int)
+      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
+      (title: "Open", responseType: RESPONSE_ACCEPT.int)
     ]
 
-  proc callDialogFile(action: FileChooserAction, title: string, buttons: seq[DialogButtonInfo] = @[]): string =
+  proc callDialogFile(action: TFileChooserAction, title: string, buttons: seq[DialogButtonInfo] = @[]): string =
     var
       argc: cint = 0
       argv: cstringArray = nil
-    discard init_check(argc, argv)
+    # discard init_check(argc, argv)
     echo "GTK initialized"
 
     # Setup dialog
@@ -69,34 +69,34 @@ when defined(linux) and not defined(android) and not defined(emscripten):
     var res = dialog.run()
 
     # Analyze call results
-    case ResponseType(res):
-    of ResponseType.ACCEPT, ResponseType.YES, ResponseType.APPLY:
-      let fileChooser = cast[FileChooser](pointer(dialog))
+    case res:
+    of RESPONSE_ACCEPT, RESPONSE_YES, RESPONSE_APPLY:
+      let fileChooser = cast[PFileChooser](pointer(dialog))
       result = $fileChooser.get_filename()
-    of ResponseType.REJECT, ResponseTYPE.NO , ResponseType.CANCEL, ResponseType.CLOSE:
+    of RESPONSE_REJECT, RESPONSE_NO, RESPONSE_CANCEL, RESPONSE_CLOSE:
       result = nil
     else:
       result = nil
 
     dialog.destroy()
-    while events_pending():
+    while events_pending() > 0:
       discard main_iteration()
 
   proc callDialogFileOpen*(title: string, buttons: seq[DialogButtonInfo] = dialogFileOpenDefaultButtons): string =
     ## Calls Linux-based OS open file dialog, and returns selected filename[s]
-    result = callDialogFile(FileChooserAction.OPEN, title, buttons)
+    result = callDialogFile(TFileChooserAction.FILE_CHOOSER_ACTION_OPEN, title, buttons)
 
   proc callDialogFileSave*(title: string): string =
     ## Calls Linux-based OS save file dialog, and returns filename to save to
-    return callDialogFile(FileChooserAction.SAVE, title, dialogFileSaveDefaultButtons)
+    return callDialogFile(TFileChooserAction.FILE_CHOOSER_ACTION_SAVE, title, dialogFileSaveDefaultButtons)
 
   proc callDialogFolderCreate*(title: string): string =
     ## Call native Linux-based OS folder creation dialog, and returns folder name
-    return callDialogFile(FileChooserAction.CREATE_FOLDER, title, dialogFolderCreateDefaultButtons)
+    return callDialogFile(TFileChooserAction.FILE_CHOOSER_ACTION_CREATE_FOLDER, title, dialogFolderCreateDefaultButtons)
 
   proc callDialogFolderSelect*(title: string): string =
     ## Call native Linux-base OS folder opening dialog, and return folder name
-    return callDialogFile(FileChooserAction.SELECT_FOLDER, title, dialogFolderSelectDefaultButtons)
+    return callDialogFile(TFileChooserAction.FILE_CHOOSER_ACTION_SELECT_FOLDER, title, dialogFolderSelectDefaultButtons)
 
 # ======== #
 # WINDOWS  #
