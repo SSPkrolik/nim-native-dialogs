@@ -23,6 +23,8 @@ when defined(linux) and not defined(android) and not defined(emscripten):
   import glib2
   import gtk2
 
+  nim_init()
+
   # Checking for Window Manager Type, and performing initialization if needed
   if os.getEnv("XDG_CURRENT_DESKTOP").toLower() in @["unity", "gnome"]:
     windowToolkitKind = WindowToolkitKind.GTK
