@@ -15,30 +15,30 @@ type
     LPOFNHOOKPROC = proc (para1: HWND, para2: WINUINT, para3: WPARAM, para4: LPARAM): WINUINT {.stdcall.}
     LPEDITMENU = pointer
 
-    OpenFileNameA {.final, pure.} = object  # 152
-        lStructSize: DWORD        # 4
-        hwndOwner: HWND           # 8 12 
-        hInstance: HINSTANCE      # 8 20
-        lpstrFilter: LPCSTR       # 8 28
-        lpstrCustomFilter: LPSTR  # 8 36
-        nMaxCustFilter: DWORD     # 4 40
-        nFilterIndex: DWORD       # 4 44
-        lpstrFile: LPSTR          # 8 52
-        nMaxFile: DWORD           # 4 56
-        lpstrFileTitle: LPSTR     # 8 64
-        nMaxFileTitle: DWORD      # 4 68
-        lpstrInitialDir: LPCSTR   # 8 76
-        lpstrTitle: LPCSTR        # 8 84
-        flags: DWORD              # 4 88
-        nFileOffset: WORD         # 2 90
-        nFileExtension: WORD      # 2 92
-        lpstrDefExt: LPCSTR       # 8 100
-        lCustData: LPARAM         # 8 108
-        lpfnHook: LPOFNHOOKPROC   # 8 116
-        lpTemplateName: LPCSTR    # 8 124
-        pvReserved: pointer       # 8 148
-        dwReserved: DWORD         # 4 152
-        flagsEx: DWORD            # 4 156
+    OpenFileNameA {.final, pure.} = object
+        lStructSize: DWORD
+        hwndOwner: HWND 
+        hInstance: HINSTANCE
+        lpstrFilter: LPCSTR
+        lpstrCustomFilter: LPSTR
+        nMaxCustFilter: DWORD
+        nFilterIndex: DWORD
+        lpstrFile: LPSTR
+        nMaxFile: DWORD
+        lpstrFileTitle: LPSTR
+        nMaxFileTitle: DWORD
+        lpstrInitialDir: LPCSTR
+        lpstrTitle: LPCSTR
+        flags: DWORD
+        nFileOffset: WORD
+        nFileExtension: WORD
+        lpstrDefExt: LPCSTR
+        lCustData: LPARAM
+        lpfnHook: LPOFNHOOKPROC
+        lpTemplateName: LPCSTR
+        pvReserved: pointer
+        dwReserved: DWORD
+        flagsEx: DWORD
 
 
 const
@@ -92,3 +92,11 @@ proc callDialogFileOpenImpl*(title: string): string =
     let res = GetOpenFileNameA(fileInfo)
 
     return if res == TRUE: $buf else: ""
+
+
+proc callDialogFolderCreateImpl*(title: string): string =
+    return callDialogFileSaveImpl(title)
+
+
+proc callDialogFolderSelectImpl*(title: string): string =
+    return callDialogFileSaveImpl(title)

@@ -5,7 +5,7 @@ import gtk2
 nim_init()
 
 
-let
+const
     dialogFileOpenDefaultButtons*: seq[DialogButtonInfo] = @[
       (title: "Cancel", responseType: RESPONSE_CANCEL.int),
       (title: "Open", responseType: RESPONSE_ACCEPT.int)
@@ -14,6 +14,16 @@ let
     dialogFileSaveDefaultButtons*: seq[DialogButtonInfo] = @[
       (title: "Cancel", responseType: RESPONSE_CANCEL.int),
       (title: "Save", responseType: RESPONSE_ACCEPT.int)
+    ]
+
+    dialogFolderCreateDefaultButtons*: seq[DialogButtonInfo] = @[
+      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
+      (title: "Create", responseType: RESPONSE_ACCEPT.int)
+    ]
+
+    dialogFolderSelectDefaultButtons*: seq[DialogButtonInfo] = @[
+      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
+      (title: "Open", responseType: RESPONSE_ACCEPT.int)
     ]
 
 
@@ -50,3 +60,9 @@ proc callDialogFileOpenImpl*(title: string, buttons: seq[DialogButtonInfo] = dia
 
 proc callDialogFileSaveImpl*(title: string): string =
     return callDialogFile(TFileChooserAction.FILE_CHOOSER_ACTION_SAVE, title, dialogFileSaveDefaultButtons)
+
+proc callDialogFolderCreateImpl*(title: string): string =
+    return callDialogFile(TFileChooserAction.FILE_CHOOSER_ACTION_CREATE_FOLDER, title, dialogFolderCreateDefaultButtons)
+
+proc callDialogFolderSelectImpl*(title: string): string =
+    return callDialogFile(TFileChooserAction.FILE_CHOOSER_ACTION_SELECT_FOLDER, title, dialogFolderSelectDefaultButtons)

@@ -59,3 +59,11 @@ proc callDialogFileSaveImpl*(title: string): string =
         """.}
         if not cres.isNil:
           result = $cres
+
+
+proc callDialogFolderCreateImpl*(title: string): string =
+    return callDialogFileSaveImpl(title)
+
+
+proc callDialogFolderSelectImpl*(title: string): string =
+    return callDialogFileSaveImpl(title)

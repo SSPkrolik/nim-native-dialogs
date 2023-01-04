@@ -16,9 +16,13 @@ proc getWindowToolkitKind*(): WindowToolkitKind = getWindowToolkitKindImpl()
 
 proc callDialogFileOpen*(title: string): string = return callDialogFileOpenImpl(title)
 proc callDialogFileSave*(title: string): string = return callDialogFileSaveImpl(title)
+proc callDialogFolderCreate*(title: string): string = return callDialogFolderCreateImpl(title)
+proc callDialogFolderSelect*(title: string): string = return callDialogFolderSelectImpl(title)
 
 
 when isMainModule:
   echo "Your window toolkit is: ", getWindowToolkitKind()
   echo callDialogFileOpen("Open Simulation Results File")
   echo callDialogFileSave("Save Simulation Results File")
+  echo callDialogFolderCreate("Save Simulation Results File")
+  echo callDialogFolderSelect("Save Simulation Results File")
