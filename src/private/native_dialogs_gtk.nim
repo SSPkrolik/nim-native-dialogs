@@ -16,15 +16,6 @@ let
       (title: "Save", responseType: RESPONSE_ACCEPT.int)
     ]
 
-    dialogFolderCreateDefaultButtons*: seq[DialogButtonInfo] = @[
-      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
-      (title: "Create", responseType: RESPONSE_ACCEPT.int)
-    ]
-
-    dialogFolderSelectDefaultButtons*: seq[DialogButtonInfo] = @[
-      (title: "Cancel", responseType: RESPONSE_CANCEL.int),
-      (title: "Open", responseType: RESPONSE_ACCEPT.int)
-    ]
 
 proc callDialogFile(action: TFileChooserAction, title: string, buttons: seq[DialogButtonInfo] = @[]): string =
     # Setup dialog
