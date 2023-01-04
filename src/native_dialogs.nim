@@ -24,5 +24,5 @@ when isMainModule:
   echo "Your window toolkit is: ", getWindowToolkitKind()
   echo callDialogFileOpen("Open Simulation Results File")
   echo callDialogFileSave("Save Simulation Results File")
-  echo callDialogFolderCreate("Save Simulation Results File")
-  echo callDialogFolderSelect("Save Simulation Results File")
+  echo callDialogFolderCreate("Create Folder For Simulation Results")
+  echo callDialogFolderSelect("Select Folder For Simulation Results")
