@@ -55,7 +55,7 @@ proc CommDlgExtendedError(): DWORD {.cdecl, used, importc, stdcall, dynlib: "Com
 
 
 proc getWindowToolkitKindImpl*(): WindowToolkitKind =
-    return WindowToolkitKind.Win32
+    return WindowToolkitKind.Windows
 
 
 proc callDialogFileSaveImpl*(title: string): string =

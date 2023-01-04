@@ -1,7 +1,7 @@
 type
     WindowToolkitKind* {.pure.} = enum
-        Win32 = 0
-        Darwin
+        Windows = 0
+        Macosx
         Gtk
         Qt
 
