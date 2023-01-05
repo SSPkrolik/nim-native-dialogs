@@ -28,16 +28,13 @@ const
 
 
 proc callDialogFile(action: TFileChooserAction, title: string, buttons: seq[DialogButtonInfo] = @[]): string =
-    # Setup dialog
     var dialog = file_chooser_dialog_new(title.cstring, nil, action, nil)
-    # Setup buttons
+
     for button in buttons:
         discard dialog.add_button(button.title.cstring, button.responseType.cint)
 
-    # Run dialog
     var res = dialog.run()
 
-    # Analyze call results
     case res:
     of RESPONSE_ACCEPT, RESPONSE_YES, RESPONSE_APPLY:
         let fileChooser = cast[PFileChooser](pointer(dialog))
