@@ -13,8 +13,8 @@ Currently the next dialogs are implemented in a single-file mode:
 
  * Open File Dialog
  * Save File Dialog
- * Folder Creation Dialog
- * Folder Selection Dialog
+ * Folder Creation Dialog (GTK-only, stubs to save file dialog on other OSes)
+ * Folder Selection Dialog (GTK-only, stubs to open file dialog on other OSes) 
 
 ## Installation
 
