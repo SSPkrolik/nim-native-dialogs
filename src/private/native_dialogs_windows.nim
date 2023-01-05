@@ -99,4 +99,4 @@ proc callDialogFolderCreateImpl*(title: string): string =
 
 
 proc callDialogFolderSelectImpl*(title: string): string =
-    return callDialogFileSaveImpl(title)
+    return callDialogFileOpenImpl(title)
